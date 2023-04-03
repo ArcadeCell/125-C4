@@ -27,8 +27,8 @@ int main() {
     BirthdayBST birthdayBST;
     ifstream myFile;
     bool loaded = false;
-    
     int choice;
+
     do {
         // print out menu options
         cout << "Press numbers 1-6 for the following options and then enter: " << endl;
@@ -104,8 +104,10 @@ int main() {
                     break;
                 }
                 // prompt user for month and day
-                cout << "Enter the month and day: ";
-                cin >> month_str >> day_str;
+                cout << "Enter a month as an integer: ";
+                cin >> month_str;
+                cout << "Enter a day as an integer: ";
+                cin >> day_str;
                 // store month and day as integers
                 month = stoi(month_str);
                 day = stoi(day_str);
