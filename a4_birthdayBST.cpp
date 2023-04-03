@@ -1,7 +1,7 @@
 #include "a4_birthdayBST.hpp"
 
 BirthdayBST::BirthdayBST(){
-    root = NULL;
+    root = nullptr;
     size = 0;
 }
 
@@ -13,9 +13,18 @@ void BirthdayBST::insertNode(Birthday* value) {
     root = insertNode_rec(root, value);
 }
 
+Birthday* BirthdayBST::removeNode(Birthday* value){
+    BirthdayBSTreeNode* node = findNodeByYMDN_rec(root, value->year,
+    value->month, value->day, value->name);
+    if (node == nullptr) return nullptr;
+    root = removeNode_rec(root, value);
+    size--;
+    return node->value;
+}
+
 Birthday* BirthdayBST::findNodeByMD(short month, short day){
     BirthdayBSTreeNode* node = findNodeByMD_rec(root, month, day);
-    if (node == NULL) return NULL;
+    if (node == nullptr) return nullptr;
     return node->value;
 }
 
@@ -28,5 +37,6 @@ void BirthdayBST::inOrderPrint(ostream& os){
 }
 
 BirthdayBST::~BirthdayBST(){
+    root = nullptr;
     deleteTree_rec(root);
 }

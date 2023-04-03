@@ -56,8 +56,9 @@ int main() {
                     break;
                 }
                 else{
-                    // a file is currently loaded, so set loaded to true
+                    // if file successfully loads, set loaded to true and clear the BST
                     loaded = true;
+                    birthdayBST.~BirthdayBST();
                     // keep track of number of entries in file
                     int numEntries = 0;
 
