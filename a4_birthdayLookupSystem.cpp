@@ -10,7 +10,6 @@
 using namespace std;
 
 int main() {
-    cout << "testing branch merge settings" << endl;
     cout << "+================================================+" << endl;
     cout << "|-------- Famous Birthdays Lookup System --------|" << endl;
     cout << "|------------------ Kevin Tian ------------------|" << endl;
