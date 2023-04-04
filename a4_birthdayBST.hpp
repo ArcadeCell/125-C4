@@ -103,9 +103,30 @@
             short year, short month, short day, string name){
                 if (node == nullptr) return nullptr;
                 if (node->value->year == year && node->value->month == month &&
-                    node->value->day == day && node->value->name == name)
+                node->value->day == day && node->value->name == name)
                     return node;
-                return node;
+                if (node->value->year < year)
+                    return findNodeByYMDN_rec(node->right, year, month, day, name);
+                else if (node->value->year > year)
+                    return findNodeByYMDN_rec(node->left, year, month, day, name);
+                else{
+                    if (node->value->month < month)
+                        return findNodeByYMDN_rec(node->right, year, month, day, name);
+                    else if (node->value->month > month)
+                        return findNodeByYMDN_rec(node->left, year, month, day, name);
+                    else{
+                        if (node->value->day < day)
+                            return findNodeByYMDN_rec(node->right, year, month, day, name);
+                        else if (node->value->day > day)
+                            return findNodeByYMDN_rec(node->left, year, month, day, name);
+                        else{
+                            if (node->value->name < name)
+                                return findNodeByYMDN_rec(node->right, year, month, day, name);
+                            else
+                                return findNodeByYMDN_rec(node->left, year, month, day, name);
+                        }
+                    }
+                }
             }
             //internal recursive find function for same month and day, useful for remove
             BirthdayBSTreeNode* findNodeByMD_rec(BirthdayBSTreeNode* node, short month, short day){

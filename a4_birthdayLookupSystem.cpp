@@ -60,7 +60,7 @@ int main() {
                     loaded = true;
                     birthdayBST.~BirthdayBST();
                     // keep track of number of entries in file
-                    int numEntries = 0;
+                    int entries = 0;
 
                     while (getline(myFile, line)){
                         // read year, month, and day
@@ -80,11 +80,11 @@ int main() {
                         Birthday* newBDay = create_Birthday(year, month, day, name, knownFor);
                         birthdayBST.insertNode(newBDay);
 
-                        numEntries++;
+                        entries++;
                         getline(myFile, line); // ignore the separator line
                     }
                     myFile.close();
-                    cout << numEntries << " entries read." << endl;
+                    cout << entries << " entries read." << endl;
                     cout << "=============================================" << endl;
                 }
                 break;
@@ -105,9 +105,10 @@ int main() {
                     break;
                 }
                 // prompt user for month and day
-                cout << "Enter a month as an integer: ";
+                cout << "What is the month? (Input 1-12 and press enter)? ";
                 cin >> month_str;
-                cout << "Enter a day as an integer: ";
+
+                cout << "What is the day? (Input 1-31 and press enter)? ";
                 cin >> day_str;
                 // store month and day as integers
                 month = stoi(month_str);
@@ -130,6 +131,41 @@ int main() {
                     cout <<"No birthday file loaded. Load one first." << endl;
                     cout <<"=============================================" << endl;
                     break;
+                }
+                cout << "What is the year? (Input a 4-digit year): ";
+                cin >> year_str;
+                year = stoi(year_str);
+
+                cout << "What is the month? (Input 1-12 and press enter): ";
+                cin >> month_str;
+                month = stoi(month_str);
+
+                cout << "What is the day? (Input 1-31 and press enter): ";
+                cin >> day_str;
+                day = stoi(day_str);
+
+                cin.ignore();
+
+                cout << "What is the name of the person? ";
+                getline(cin, name);
+
+                cout << "What is the person known for? ";
+                getline(cin, knownFor);
+
+                cout << "You have entered: " << year_str << "-" << month_str << "-" << day_str 
+                << endl << name << endl << knownFor << endl;
+                
+                // if an entry with the year, month, day, and name already exists in BST, print error message{
+                if (birthdayBST.findNodeByYMDN(year, month, day, name) != nullptr){
+                    cout << "An entry with the same birthday and name already exists. Nothing added." << endl;
+                    cout << "=============================================" << endl;
+                }
+                // if no duplicate entry is found, create a new birthday object and add it into the BST
+                else{
+                    Birthday* newBDay = create_Birthday(year, month, day, name, knownFor);
+                    birthdayBST.insertNode(newBDay);
+                    cout << "Birthday added." << endl;
+                    cout << "=============================================" << endl;
                 }
                 break;
 

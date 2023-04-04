@@ -22,6 +22,13 @@ Birthday* BirthdayBST::removeNode(Birthday* value){
     return node->value;
 }
 
+Birthday* BirthdayBST::findNodeByYMDN(short year, short month, short day,
+                                    string name){
+    BirthdayBSTreeNode* node = findNodeByYMDN_rec(root, year, month, day, name);
+    if (node == nullptr) return nullptr;
+    return node->value;
+}
+
 Birthday* BirthdayBST::findNodeByMD(short month, short day){
     BirthdayBSTreeNode* node = findNodeByMD_rec(root, month, day);
     if (node == nullptr) return nullptr;
