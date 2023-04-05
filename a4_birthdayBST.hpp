@@ -22,34 +22,57 @@
 
             //internal recursive insert function
             BirthdayBSTreeNode* insertNode_rec(BirthdayBSTreeNode* node, Birthday* value) {
-                // If the tree is empty, create a new node as the root
+                // if the tree is empty, create a new node
                 if (node == nullptr) {
-                    BirthdayBSTreeNode* new_node = new BirthdayBSTreeNode;
-                    new_node->value = value;
-                    new_node->left = nullptr;
-                    new_node->right = nullptr;
-                    new_node->parent = nullptr;
+                    BirthdayBSTreeNode* new_node = newNode(value);
                     return new_node;
                 }
-                // If the tree is not empty, compare the value to the root
-                // If the value is less than the root, insert it to the left
+                // if the tree is not empty, compare the value to the root
+                // inserted by month-day-year-name
+                // compare months
                 if (value->month < node->value->month) {
                     node->left = insertNode_rec(node->left, value);
                     node->left->parent = node;
                 }
-                // If the value is greater than the root, insert it to the right
                 else if (value->month > node->value->month) {
                     node->right = insertNode_rec(node->right, value);
                     node->right->parent = node;
                 }
                 else{
-                    // Same month, compare days
+                    // same month, compare days
                     if (value->day < node->value->day) {
                         node->left = insertNode_rec(node->left, value);
                         node->left->parent = node;
-                    } else {
+                    } 
+                    else if (value->day > node->value->day) {
                         node->right = insertNode_rec(node->right, value);
                         node->right->parent = node;
+                    }
+                    else{
+                        // same month and day, compare years
+                        if (value->year < node->value->year) {
+                            node->left = insertNode_rec(node->left, value);
+                            node->left->parent = node;
+                        }
+                        else if (value->year > node->value->year) {
+                            node->right = insertNode_rec(node->right, value);
+                            node->right->parent = node;
+                        }
+                        else{
+                            // same date, compare names
+                            if (value->name < node->value->name) {
+                                node->left = insertNode_rec(node->left, value);
+                                node->left->parent = node;
+                            }
+                            else if (value->name > node->value->name) {
+                                node->right = insertNode_rec(node->right, value);
+                                node->right->parent = node;
+                            }
+                            else{
+                                // same birthday, do nothing
+                                return node;
+                            }
+                        }
                     }
                 }
                 return node;
@@ -57,42 +80,50 @@
             //internal recursive remove function
             BirthdayBSTreeNode* removeNode_rec(BirthdayBSTreeNode* node,
                                             Birthday* value){
+                // no matching birthday found
                 if (node == nullptr) return nullptr;
+                // compare months
                 if (value->month < node->value->month)
                     node->left = removeNode_rec(node->left, value);
                 else if (value->month > node->value->month)
                     node->right = removeNode_rec(node->right, value);
                 else{
-                    // Same month, compare days
+                    // same month, compare days
                     if (value->day < node->value->day)
                         node->left = removeNode_rec(node->left, value);
                     else if (value->day > node->value->day)
                         node->right = removeNode_rec(node->right, value);
                     else{
-                        // Same month and day, compare names
-                        if (value->name < node->value->name)
+                        // same month and day, compare years
+                        if (value->year < node->value->year)
                             node->left = removeNode_rec(node->left, value);
-                        else if (value->name > node->value->name)
-                            node->right = removeNode_rec(node->right, value);
+                        else if (value->year > node->value->year)
+                            node->right = removeNode_rec(node->right, value);  
                         else{
-                            // Same month, day and name, remove this node
-                            if (node->left == nullptr){
-                                BirthdayBSTreeNode* temp = node->right;
-                                delete node;
-                                return temp;
-                                            }
-                            else if (node->right == nullptr){
-                                BirthdayBSTreeNode* temp = node->left;
-                                delete node;
-                                return temp;
+                            // same date, compare names
+                            if (value->name < node->value->name)
+                                node->left = removeNode_rec(node->left, value);
+                            else if (value->name > node->value->name)
+                                node->right = removeNode_rec(node->right, value);
+                            else{
+                                // Same birthday, delete the node
+                                if (node->left == nullptr){
+                                    BirthdayBSTreeNode* temp = node->right;
+                                    delete node;
+                                    return temp;
+                                                }
+                                else if (node->right == nullptr){
+                                    BirthdayBSTreeNode* temp = node->left;
+                                    delete node;
+                                    return temp;
+                                }
+                                // node with two children, get the inorder successor
+                                BirthdayBSTreeNode* temp = minSuccessor(node->right);
+                                // store the inorder successor's value
+                                node->value = temp->value;
+                                // delete the inorder successor
+                                node->right = removeNode_rec(node->right, temp->value);
                             }
-                            // Node with two children: Get the inorder successor
-                            // (smallest in the right subtree)
-                            BirthdayBSTreeNode* temp = minSuccessor(node->right);
-                            // Copy the inorder successor's content to this node
-                            node->value = temp->value;
-                            // Delete the inorder successor
-                            node->right = removeNode_rec(node->right, temp->value);
                         }
                     }
                 }
@@ -101,25 +132,30 @@
             //internal recursive find function for duplicates, useful for insert
             BirthdayBSTreeNode* findNodeByYMDN_rec(BirthdayBSTreeNode* node,
             short year, short month, short day, string name){
+                // no matching birthday found
                 if (node == nullptr) return nullptr;
                 if (node->value->year == year && node->value->month == month &&
                 node->value->day == day && node->value->name == name)
                     return node;
-                if (node->value->year < year)
+                // compare months
+                if (node->value->month < month)
                     return findNodeByYMDN_rec(node->right, year, month, day, name);
-                else if (node->value->year > year)
+                else if (node->value->month > month)
                     return findNodeByYMDN_rec(node->left, year, month, day, name);
                 else{
-                    if (node->value->month < month)
+                    // same month, compare days
+                    if (node->value->day < day)
                         return findNodeByYMDN_rec(node->right, year, month, day, name);
-                    else if (node->value->month > month)
+                    else if (node->value->day > day)
                         return findNodeByYMDN_rec(node->left, year, month, day, name);
-                    else{
-                        if (node->value->day < day)
+                    else{ 
+                        // same month and day, compare years
+                        if (node->value->year < year)
                             return findNodeByYMDN_rec(node->right, year, month, day, name);
-                        else if (node->value->day > day)
-                            return findNodeByYMDN_rec(node->left, year, month, day, name);
+                        else if (node->value->year > year)
+                            return findNodeByYMDN_rec(node->left, year, month, day, name);   
                         else{
+                            // same date, compare names
                             if (node->value->name < name)
                                 return findNodeByYMDN_rec(node->right, year, month, day, name);
                             else
@@ -148,6 +184,7 @@
             void printAllNodeWithMatchingMD_rec(BirthdayBSTreeNode* node, 
             ostream& os, short month, short day){
                 if (node == nullptr) return;
+                // print user inorder traversal
                 printAllNodeWithMatchingMD_rec(node->left, os, month, day); 
                 if (node->value->month == month && node->value->day == day)
                     print_Birthday(node->value, os);
@@ -156,6 +193,7 @@
             //internal recursive print function performing an in-order traversal
             void inOrderPrint_rec(BirthdayBSTreeNode* node, ostream& os){
                 if (node == nullptr) return;
+                // print user inorder traversal
                 inOrderPrint_rec(node->left, os);
                 print_Birthday(node->value, os);
                 inOrderPrint_rec(node->right, os);

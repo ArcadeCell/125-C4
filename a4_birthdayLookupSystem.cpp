@@ -5,6 +5,7 @@
 #include "a4_birthdaylib.hpp"
 #include "a4_birthdayBST.hpp"
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -17,17 +18,15 @@ int main() {
     cout << "|----------------- kta101@sfu.ca ----------------|" << endl;
     cout << "+================================================+" << endl;
 
-    // int used = 0;
-    // int capacity = 16;
-    // Birthday **bdayArray = new Birthday*[capacity];
     short year, month, day;
     string year_str, month_str, day_str, name, knownFor;
-    string line;
-    string filename;
+    string line, filename;
     BirthdayBST birthdayBST;
-    ifstream myFile;
+    ifstream myfile;
+    ofstream userfile(filename);
     bool loaded = false;
     int choice;
+    int entries;
 
     do {
         // print out menu options
@@ -48,10 +47,10 @@ int main() {
             case 1:
                 cout << "Enter the full name of the birthday file (with extension): ";
                 cin >> filename;
-                myFile.open(filename);
+                myfile.open(filename);
                 // if file fails to open, print error message and break
-                if (!myFile.good()){
-                    cout << "Failed to open file. Please try again." << endl;
+                if (!myfile.good()){
+                    cout << "Failed to open file. Check if it exists." << endl;
                     cout << "=============================================" << endl;
                     break;
                 }
@@ -60,30 +59,32 @@ int main() {
                     loaded = true;
                     birthdayBST.~BirthdayBST();
                     // keep track of number of entries in file
-                    int entries = 0;
+                    entries = 0;
 
-                    while (getline(myFile, line)){
+                    while (getline(myfile, line)){
                         // read year, month, and day
-                        stringstream iss(line);
-                        getline(iss, year_str, '-');
-                        getline(iss, month_str, '-');
-                        getline(iss, day_str);
+                        stringstream s(line);
+                        getline(s, year_str, '-');
+                        getline(s, month_str, '-');
+                        getline(s, day_str);
+
                         // store year, month, and day as integers
                         year = stoi(year_str);
                         month = stoi(month_str);
                         day = stoi(day_str);
+
                         // read and store name and knownFor
-                        getline(myFile, name);
-                        getline(myFile, knownFor);
+                        getline(myfile, name);
+                        getline(myfile, knownFor);
 
                         // create a new birthday object and add it into the BST
                         Birthday* newBDay = create_Birthday(year, month, day, name, knownFor);
                         birthdayBST.insertNode(newBDay);
 
                         entries++;
-                        getline(myFile, line); // ignore the separator line
+                        getline(myfile, line); // ignore the separator line
                     }
-                    myFile.close();
+                    myfile.close();
                     cout << entries << " entries read." << endl;
                     cout << "=============================================" << endl;
                 }
@@ -95,6 +96,7 @@ int main() {
                     cout <<"=============================================" << endl;
                     break;
                 }
+                // birthdays are already sorted by month-day when they are added into the BST, so call inOrderPrint
                 birthdayBST.inOrderPrint(cout);
                 break;
             
@@ -104,16 +106,16 @@ int main() {
                     cout <<"=============================================" << endl;
                     break;
                 }
-                // prompt user for month and day
                 cout << "What is the month? (Input 1-12 and press enter)? ";
                 cin >> month_str;
-
                 cout << "What is the day? (Input 1-31 and press enter)? ";
                 cin >> day_str;
+
                 // store month and day as integers
                 month = stoi(month_str);
                 day = stoi(day_str);
-                // if there are no matching birthdays, no birthdays and break
+
+                // if there are no matching birthdays, print no such birthday and break
                 if (birthdayBST.findNodeByMD(month, day) == nullptr){
                     cout << "No such birthday on record." << endl;
                     cout << "=============================================" << endl;
@@ -121,7 +123,6 @@ int main() {
                 }
                 // report all entries with the entered birthday.
                 else{
-                    birthdayBST.findNodeByMD(month, day);
                     birthdayBST.printAllNodeWithMatchingMD(month, day, cout);
                 }
                 break;
@@ -155,15 +156,17 @@ int main() {
                 cout << "You have entered: " << year_str << "-" << month_str << "-" << day_str 
                 << endl << name << endl << knownFor << endl;
                 
-                // if an entry with the year, month, day, and name already exists in BST, print error message{
+                // if a duplicate is found in BST, print error message
                 if (birthdayBST.findNodeByYMDN(year, month, day, name) != nullptr){
                     cout << "An entry with the same birthday and name already exists. Nothing added." << endl;
                     cout << "=============================================" << endl;
+                    break;
                 }
                 // if no duplicate entry is found, create a new birthday object and add it into the BST
                 else{
                     Birthday* newBDay = create_Birthday(year, month, day, name, knownFor);
                     birthdayBST.insertNode(newBDay);
+                    entries++;
                     cout << "Birthday added." << endl;
                     cout << "=============================================" << endl;
                 }
@@ -175,12 +178,18 @@ int main() {
                     cout <<"=============================================" << endl;
                     break;
                 }
+                cout << "Enter the full name of the birthday file (with extension): " << endl;
+                cin >> filename;
+                // open the file and call inOrderPrint to print the formatted entries into the file
+                userfile.open(filename);
+                birthdayBST.inOrderPrint(userfile);
+                userfile.close();    
+
+                cout << entries << " entries added to " << filename << endl;
                 break;
 
             case 6:
-                // for (int i = 0; i < used; i++){
-                //     delete_Birthday(bdayArray[i]);
-                // }
+                birthdayBST.~BirthdayBST(); // clear the BST
                 cout << "Thank you for using 'Famous Birthdays Lookup System'. Goodbye!";
                 break;
         }
