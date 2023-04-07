@@ -7,7 +7,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
 using namespace std;
 
 int main() {
@@ -61,19 +60,35 @@ int main() {
                     // keep track of number of entries in file
                     entries = 0;
 
+                    // read the myfile line by line
                     while (getline(myfile, line)){
-                        // read year, month, and day
-                        stringstream s(line);
-                        getline(s, year_str, '-');
-                        getline(s, month_str, '-');
-                        getline(s, day_str);
+                        string year_str, month_str, day_str;
+                        // initialize counter for the number of '-' delimiters read
+                        int delimiter_count = 0;
+                        // iterate over each character in the input line
+                        for (char c : line) {
+                            // if a '-' delimiter is read, increment delimiter_count and continue to next character
+                            if (c == '-') {
+                                delimiter_count++;
+                                continue;
+                            }
+                            // append the current character to the correct string based on delimiter_count
+                            if (delimiter_count == 0) {
+                                year_str += c;
+                            } else if (delimiter_count == 1) {
+                                month_str += c;
+                            } else {
+                                day_str += c;
+                            }
+                        }
 
                         // store year, month, and day as integers
-                        year = stoi(year_str);
-                        month = stoi(month_str);
-                        day = stoi(day_str);
+                        int year = stoi(year_str);
+                        int month = stoi(month_str);
+                        int day = stoi(day_str);
 
                         // read and store name and knownFor
+                        string name, knownFor;
                         getline(myfile, name);
                         getline(myfile, knownFor);
 
@@ -84,6 +99,7 @@ int main() {
                         entries++;
                         getline(myfile, line); // ignore the separator line
                     }
+
                     myfile.close();
                     cout << entries << " entries read." << endl;
                     cout << "=============================================" << endl;
@@ -173,18 +189,12 @@ int main() {
                 break;
 
             case 5:
-                if(!loaded){
-                    cout <<"No birthday file loaded. Load one first." << endl;
-                    cout <<"=============================================" << endl;
-                    break;
-                }
                 cout << "Enter the full name of the birthday file (with extension): " << endl;
                 cin >> filename;
                 // open the file and call inOrderPrint to print the formatted entries into the file
                 userfile.open(filename);
                 birthdayBST.inOrderPrint(userfile);
                 userfile.close();    
-
                 cout << entries << " entries added to " << filename << endl;
                 break;
 
