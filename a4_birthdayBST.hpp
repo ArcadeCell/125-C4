@@ -30,23 +30,49 @@ class BirthdayBST {
             // if the tree is not empty, compare the value to the root
             // inserted by month-day-year-name
             // compare months
-            if (value->month < node->value->month){
+            if (value->month < node->value->month) {
                 node->left = insertNode_rec(node->left, value);
                 node->left->parent = node;
             }
-            else if (value->month > node->value->month){
+            else if (value->month > node->value->month) {
                 node->right = insertNode_rec(node->right, value);
                 node->right->parent = node;
             }
             else{
                 // same month, compare days
-                if (value->day < node->value->day){
+                if (value->day < node->value->day) {
                     node->left = insertNode_rec(node->left, value);
                     node->left->parent = node;
                 } 
-                else{
+                else if (value->day > node->value->day) {
                     node->right = insertNode_rec(node->right, value);
                     node->right->parent = node;
+                }
+                else{
+                    // same month and day, compare years
+                    if (value->year < node->value->year) {
+                        node->left = insertNode_rec(node->left, value);
+                        node->left->parent = node;
+                    }
+                    else if (value->year > node->value->year) {
+                        node->right = insertNode_rec(node->right, value);
+                        node->right->parent = node;
+                    }
+                    else{
+                        // same date, compare names
+                        if (value->name < node->value->name) {
+                            node->left = insertNode_rec(node->left, value);
+                            node->left->parent = node;
+                        }
+                        else if (value->name > node->value->name) {
+                            node->right = insertNode_rec(node->right, value);
+                            node->right->parent = node;
+                        }
+                        else{
+                            // same birthday, do nothing
+                            return node;
+                        }
+                    }
                 }
             }
             return node;
